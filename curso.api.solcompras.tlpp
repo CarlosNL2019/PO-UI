@@ -1,0 +1,128 @@
+#include 'totvs.ch'
+#include 'tlpp-core.th'
+#include 'parmtype.ch'
+#include 'topconn.ch'
+
+namespace curso.api.scpoui
+
+/*/{Protheus.doc} U_GETSCPOUI
+    Programa para consulta @GET do Cadastro de Solicitação de Compras
+    @type  Function
+    @author Carlos Lima
+/*/
+
+@get('/curso/api/solcompras') 
+Function U_GETSCPOUI() as logical
+
+    Local cResult   := ''   as character
+    Local cQuery    := ''   as character
+    Local cWhere    := ''   as character
+    Local cNumSc    := ''   as character
+    Local cSearch   := ''   as character
+    Local cOrder    := ''   as character
+    Local cFilter   := ''   as character
+    Local nPage     := 1    as variant
+    Local nPageSize := 9999 as variant
+    Local oQuery    := nil  as object
+
+    oQuery := fwAdapterBaseV2():new('GET',.T.)
+    
+    oQuery:addMapFields('filial'        ,'C1_FILIAL'  ,.T.,.T.)
+    oQuery:addMapFields('numsc'         ,'C1_NUM'     ,.T.,.T.)
+    oQuery:addMapFields('itemsc'        ,'C1_ITEM'    ,.T.,.T.)
+    oQuery:addMapFields('solicitante'   ,'C1_SOLICIT' ,.T.,.T.)
+    oQuery:addMapFields('dtemissao'     ,'C1_EMISSAO' ,.T.,.T.,{"C1_EMISSAO", "D", 8, 0}) 
+    oQuery:addMapFields('codpro'        ,'C1_PRODUTO' ,.T.,.T.)
+    oQuery:addMapFields('qtde'          ,'C1_QUANT'   ,.T.,.T.,{'C1_QUANT', "N", 12, 3})    
+    oQuery:addMapFields('quje'          ,'C1_QUJE'    ,.T.,.T.)    
+    oQuery:addMapFields('und'           ,'C1_UM'      ,.T.,.T.)
+    oQuery:addMapFields('descricao'     ,'C1_DESCRI'  ,.T.,.T.)
+    oQuery:addMapFields('desccompl'     ,'C1_DESCCMP' ,.T.,.T.)
+    oQuery:addMapFields('armazem'       ,'C1_LOCAL'   ,.T.,.T.)
+    oQuery:addMapFields('tiposc'        ,'C1_XTIPOSC' ,.T.,.T.)
+    oQuery:addMapFields('necessidade'   ,'C1_DATPRF'  ,.T.,.T.)
+    oQuery:addMapFields('ccusto'        ,'C1_CC'      ,.T.,.T.)
+    oQuery:addMapFields('fornece'       ,'C1_FORNECE' ,.T.,.T.)
+    oQuery:addMapFields('loja'          ,'C1_LOJA'    ,.T.,.T.)
+    oQuery:addMapFields('itemproj'      ,'C1_XITPROJ' ,.T.,.T.)
+    oQuery:addMapFields('invpa'         ,'C1_INVPA'   ,.T.,.T.)    
+    oQuery:addMapFields('codaprov'      ,'C1_XAPSC'   ,.T.,.T.)
+    oQuery:addMapFields('aprovador'     ,'C1_NOMAPRO' ,.T.,.T.)
+    oQuery:addMapFields('projeto'       ,'C1_PROJETO' ,.T.,.T.)
+    oQuery:addMapFields('contrato'      ,'C1_XNUMCT'  ,.T.,.T.)
+    oQuery:addMapFields('observ'        ,'C1_OBS'     ,.T.,.T.)
+    oQuery:addMapFields('cotacao'       ,'C1_COTACAO' ,.T.,.T.)
+    oQuery:addMapFields('anexo'         ,'C1_XANEXO'  ,.T.,.T.)
+    oQuery:addMapFields('nomeanexo'     ,'C1_XNOMEAN' ,.T.,.T.)
+    oQuery:addMapFields('comprador'     ,'C1_CODCOMP' ,.T.,.T.)
+    oQuery:addMapFields('pedido'        ,'C1_PEDIDO'  ,.T.,.T.)    
+    oQuery:addMapFields('itemPed'       ,'C1_ITEMPED' ,.T.,.T.)    
+    oQuery:addMapFields('nomefor'       ,'A2_NOME'    ,.T.,.T.)    
+    oQuery:addMapFields('nomered'       ,'A2_NREDUZ'  ,.T.,.T.)    
+    oQuery:addMapFields('estado'        ,'A2_EST'     ,.T.,.T.)    
+ 
+    cQuery := "SELECT #QueryFields# FROM " + retSQLName("SC1") + " SC1 (NOLOCK) "
+    cQuery += "LEFT JOIN " + retSQLName("SA2") + " SA2 (NOLOCK) ON A2_COD = C1_FORNECE AND A2_LOJA = C1_LOJA AND SA2.D_E_L_E_T_ = ' ' "
+    cQuery += "WHERE #QueryWhere#"
+    cWhere := "C1_FILIAL = '02' AND C1_EMISSAO > '20250630' AND SC1.D_E_L_E_T_ = ' ' "
+
+    jQuery      := oRest:getQueryRequest()
+
+    cNumSC      := if(empty(jQuery['numsc'      ]),''      ,jQuery['numsc'    ])
+    cCodPro     := if(empty(jQuery['codpro'     ]),''      ,jQuery['codpro'   ])
+    cCodCC      := if(empty(jQuery['ccusto'     ]),''      ,jQuery['ccusto'   ])
+    dEmiss      := if(empty(jQuery['dtemissao'  ]),''      ,jQuery['dtemissao'])
+    cSearch     := if(empty(jQuery['search'     ]),''      ,jQuery['search'   ])
+    cFilter     := if(empty(jQuery['filter'     ]),''      ,jQuery['filter'   ])
+    cOrder      := if(empty(jQuery['order'      ]),''      ,jQuery['order'    ])
+    nPage       := if(empty(jQuery['page'       ]),'1'     ,jQuery['page'     ]) ; nPage     := val(nPage    )
+    nPageSize   := if(empty(jQuery['pageSize'   ]),'100'   ,jQuery['pageSize' ]) ; nPageSize := val(nPageSize)   
+
+    If !empty(cNumSC)
+        cWhere += "AND C1_NUM LIKE '%" + alltrim(cNumSC) + "%' "
+    EndIf  
+
+    If !empty(cCodPro)
+        cWhere += "AND C1_PRODUTO LIKE '%" + alltrim(upper(cCodPro)) + "%' "
+    EndIf
+
+    If !empty(dEmiss)
+        cWhere += "AND C1_EMISSAO >= '" + alltrim(dtemissao) + "' "
+    EndIf
+
+    If !empty(cSearch)
+        cWhere += "AND C1_NUM LIKE '%" + alltrim(cSearch) + "%' "
+    EndIf
+
+    If !empty(cFilter)
+        cWhere += "AND C1_NUM LIKE '%" + alltrim(cFilter) + "%' "
+    EndIf 
+
+    If empty(cOrder)
+        cOrder  := 'C1_FILIAL, C1_NUM'
+    EndIf
+
+    If empty(nPage)
+        nPage := 1
+    EndIf
+
+    If empty(nPageSize)
+        nPageSize := 000
+    EndIf  
+
+    oQuery:setQuery(cQuery)
+    oQuery:setWhere(cWhere)
+    oQuery:setOrder(cOrder)
+    oQuery:setPageSize(nPageSize)
+    oQuery:setPage(nPage)
+
+    IF oQuery:execute()
+        oQuery:fillGetResponse()
+        cResult := oQuery:getJsonResponse()
+    EndIF 
+    
+    oRest:setResponse(cResult)
+
+    //CONOUT(">> Resultado..."+CRLF+cResult+CRLF)
+
+Return .T.

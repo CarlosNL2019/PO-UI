@@ -1,0 +1,22 @@
+Klaus, bom dia!
+Transcrevo aqui minha solicitação de ajuda que postei no seu vídeo "Como criar uma consulta Padrão F3 no PO-UI com PoLookUp e TLPP #Angular #PO-UI #F3 #LookUp"
+no último sábado.
+Agradeço de antemão, pela sua ajuda!
+"Klaus, boa noite!
+Fiz o seu curso "Aprenda Angular e PO-UI do Zero" pela Udemy, começei há quase 1 ano atrás.
+Excelente curso!!
+Recomendo a todos esse excelente curso, ainda mais quem trabalha como desenvolvedor Protheus.
+Tanto é que, após assistindo (diversas vezes) os vídeos e fazendo testes, resolvi colocar a mão na massa em um projeto simples (inicial!) na empresa.
+Tipo o seu CRM.
+E esse vídeo do PoLookUp veio na hora hora certa.
+Tomei como base o seu exemplo: UF -> CIDADE 
+No meu caso, parte de um Combo (Sim ou Não) para alterar 'disabled' de outra property (property: 'projeto').
+Tipo assim, se 'itproj' = 'Sim', tem que habilitar o campo 'projeto' (disabled: false) para selecionar o código do projeto, se 'Não', manter o campo 'projeto' desabilitado (disabled: true).
+Bom acontece, é que não estou conseguindo alterar essa propriedade 'disabled' em property: 'projeto'.
+Já estou com quase dois dias tentando sem sucesso. 
+Por isso, estou recorrendo a você, precisando muito dessa ajuda, se possível for.
+Depois que altero a Select da propriedade anterior (property: 'itproj' - inicio essa propriedade com 'N') de "Não' para 'Sim, deve alterar 'disabled' para false  na property: 'projeto' (inicio disabled = true).
+Espero que tenha entendido o meu questionamento."
+
+Att.,
+Carlos Lima.

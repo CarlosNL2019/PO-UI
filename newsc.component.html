@@ -1,0 +1,15 @@
+<po-page-default>
+    <po-dynamic-form 
+      #formNewSc 
+      [p-fields]="fields" 
+      [p-validate]="this.onChangeValue.bind(this)"
+      [p-value]="initialValues"     
+    />
+
+    <br />
+    
+    <div class="po-row">
+      <po-button class="po-md-3" p-label="Confirmar" (p-click)="confirmForm(formNewSc.form.value)"/>
+      <po-button class="po-md-3" p-label="Cancelar"  (p-click)="cancelaForm(formNewSc.form.value)"/>
+    </div>
+</po-page-default>
